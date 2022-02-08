@@ -1,0 +1,6 @@
+function [A, s] = system_assembly(D, E, b, c);
+
+n = size(D, 1);
+Z = zeros(n);
+A = [D E'; E Z];
+s = [b; c];
