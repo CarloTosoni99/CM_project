@@ -1,5 +1,5 @@
 
-function [Q, H] = arnoldi_step(A, b, n, Q, H)
+function [Q, H] = arnoldi_iter(A, b, n, Q, H)
 
 w = A*Q(:, n);
 
