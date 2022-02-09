@@ -18,6 +18,8 @@ for i = 1:n
     % compute the vector x in K_n(A,b) solving x = Qy.
     y = H \ (eye(i+1,1)*norm(b));
     x = Q1*y;
+    % to study how faster the algorithm is converging to the solution of
+    % the system, the function computes at each step the residual.
     r(i) = norm(A*x - b);
 
     Q1 = Q2;
