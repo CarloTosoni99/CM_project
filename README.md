@@ -66,3 +66,5 @@ Other functions in the repository have been implemented just for testing and are
 3. The prompt of our project states that the "reduced" linear system of [D E'; E 0][x; y] = [b; c] is __(E\*inv(D)\*E)y = (E\*inv(D))b - c__, while, according to us, it should be __(E\*inv(D)\*E')y = (E\*inv(D))b - c__&nbsp; &nbsp; (with E' istead of E).
 
 4. The matrix (E\*inv(D)\*E') is not always positive-definite, indeed this matrix may have eigenvalues equal to 0. Probably it happens because we need some further assumptions on the directed graph G.
+
+5. We have not understood how to compute efficiently the smallest eigenvalues with Arnoldi.
