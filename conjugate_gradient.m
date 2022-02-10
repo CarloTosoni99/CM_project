@@ -20,7 +20,7 @@ s = E*(D\b) - c;
 x(:, 1) = zeros(m, 1); % that is the initial position of the algorithm, 
 % we start from 0
 
-r(:, 1) = s; % when the algorithm starts both r and d are equal to 0 (since 
+r(:, 1) = s; % when the algorithm starts both r and d are equal to s (since 
 d(:, 1) = s; % both are the sign-changed gradient of the system for x = 0) 
 
 for i = 1:n
