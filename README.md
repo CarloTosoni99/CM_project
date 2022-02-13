@@ -1,7 +1,7 @@
 
 # Computational Mathematics for Learning and Data Analysis #
 
-## Non-ML project n.21, Edoardo Federici 616667, Carlo Tosoni 644824, group n.16##
+## Non-ML project n.21, Edoardo Federici 616667, Carlo Tosoni 644824, group n.16 ##
 
 ---
 
