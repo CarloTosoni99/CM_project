@@ -1,5 +1,5 @@
 
-function [Q2, H, r] = minres(A, b, n)
+function [Q2, H, r] = myminres(A, b, n)
 
 % first step of the algorithm, we have to compute the first vector of the
 % orthonormal basis Q, this is actually easy to compute, indeed we have
@@ -10,7 +10,7 @@ Q1 = b / norm(b);
 % matrices H and Q, at each step we will find a better approximation of the
 % system
 H = 0;
-r = nan(1, 50);
+r = nan(1, n);
 for i = 1:n
     [Q2, H] = arnoldi_iter(A, b, i, Q1, H);
     % now at each step we have to solve the system ||(Hy-e1||b||)||, finding
