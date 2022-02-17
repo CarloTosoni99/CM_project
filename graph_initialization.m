@@ -20,4 +20,3 @@ t = randi([1 n], 1, e);
 
 % now we can create the direct graph
 G = digraph(s, t);
-
