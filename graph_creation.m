@@ -29,13 +29,18 @@ G = digraph([1]);
 while i<n
 
     % to define a new arc, we take a node at random from those we already have and...
-    arcStarts = randi(i,1);
+    fromOld = randi(i,1);
 
     % ... we generate a new node
-    newNode = i+1;
+    fromNew = i+1;
     
     % then we create the arc
-    G = addedge(G,arcStarts,newNode,1);
+    coinFlip = randi(2,1);
+    if coinFlip==1
+        G = addedge(G,fromOld,fromNew,1);
+    else
+        G = addedge(G,fromNew,fromOld,1);
+    end
     
     i=i+1;
     j=j+1;
