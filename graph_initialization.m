@@ -76,3 +76,4 @@ if c == true
         end
     end
 end
+fprintf('The resulting graph G has %d total edges rather than the specified %d. \n', size(G.Edges,1), e);
