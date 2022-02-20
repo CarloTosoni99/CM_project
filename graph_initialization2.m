@@ -20,8 +20,8 @@ function G = graph_initialization2(n, e, seed, c, wcon_dim)
 rng(seed, 'twister'); 
 
 % initializing the tails and the heads of the edges of the directed graph
-s = zeros(1, e);
-t = zeros(1, e);
+s = ones(1, e);
+t = ones(1, e);
 
 % vector that stores how many edges there are for each sub-graph
 wcon_edges = zeros(1, length(wcon_dim) + 1);
@@ -69,25 +69,26 @@ for i = 1:length(wcon_edges)
 end
 
 % finally, we can generate the heads and the tails of the G's edges
+edge_num = 1;
 node_num = 1;
 for i = 1:length(wcon_edges)
     if i <= length(wcon_dim) && wcon_dim(i) > 0
-        s(node_num:node_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
-        t(node_num:node_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
+        s(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
+        t(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
         node_num = node_num + wcon_dim(i);
+        edge_num = edge_num + wcon_edges(i);
     elseif last_com > 0
-        s(node_num:node_num + wcon_edges(i) - 1) = randi([node_num node_num+last_com-1], 1, wcon_edges(i));
-        t(node_num:node_num + wcon_edges(i) - 1) = randi([node_num node_num+last_com-1], 1, wcon_edges(i));
+        s(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+last_com-1], 1, wcon_edges(i));
+        t(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+last_com-1], 1, wcon_edges(i));
     end
 end
-
 
 % deleting buckles (edges from and to the same node), we cannot generate 
 % the incidence matrix of a graph with buckles, hence, we have to delete 
 % them.
 b = false(e);
 for i = 1:e
-    if s(i) == t(i) || s(i) == 0 || t(i) == 0
+    if s(i) == t(i)
         b(i) = true;
     end
 end
@@ -116,27 +117,69 @@ G = digraph(s, t);
 % connected, then we add edges to the graph until this condition is 
 % satisfied
 if c == true
-    endLoop = false;
-    while(~endLoop)
-        weak_bins = conncomp(G, 'Type', 'weak');
-        startEdge = 0;
-        endEdge = 0;
-        endLoop = true;
-        for i = 1:length(weak_bins)
-            if weak_bins(i) ~= 1
-                endLoop = false;
-            end
-            if weak_bins(i) ~= startEdge && weak_bins(i) ~= endEdge
-                if startEdge == 0
-                    startEdge = i;
-                else
-                    endEdge = i;
-                    G = addedge(G, startEdge, endEdge);
-                    startEdge = 0;
-                    endEdge = 0;
-                end
-            end
+    num_comp = length(wcon_dim) + 1;
+    rem_sub_graphs = num_comp;
+
+    startingPositions = zeros(1, num_comp+1);
+    startingPositions(1) = 1;
+
+    for i = 2:num_comp
+        startingPositions(i) = startingPositions(i-1) + wcon_dim(i-1);
+    end
+    startingPositions(num_comp+1) = n+1;
+
+    con_sub_graphs = false(1,num_comp);
+    for i = 1:num_comp-1
+        if wcon_dim == 0
+            con_sub_graphs(i) = true;
+            rem_sub_graphs = rem_sub_graphs - 1;
         end
     end
+    if last_com == 0
+        con_sub_graphs(num_comp) = true;
+        rem_sub_graphs = rem_sub_graphs - 1;
+    end
+
+    while rem_sub_graphs > 0
+        weak_bins = conncomp(G, 'Type', 'weak');
+        
+        for i = 1:num_comp
+            startEdge = 0;
+            endEdge = 0;
+            connected = true;
+            first_bin = 0;
+
+            if ~con_sub_graphs(i)
+                first_node = startingPositions(i);
+                last_node = startingPositions(i+1) - 1;
+                
+                for j = first_node:last_node
+
+                    if j < length(weak_bins) && weak_bins(j) ~= first_bin %%&& weak_bins(j) ~= last_bin
+                        if startEdge == 0
+                            startEdge = j;
+                            first_bin = weak_bins(j);
+                        else
+                            endEdge = j;
+                            G = addedge(G, startEdge, endEdge);
+                            startEdge = 0;
+                            endEdge = 0;
+                            first_bin = 0;
+                            connected = false;
+                        end
+                    end
+                end
+
+                if connected
+                    con_sub_graphs(i) = true;
+                    rem_sub_graphs = rem_sub_graphs - 1;
+                end
+            end            
+        end
+
+
+    end
+
+
 end
 fprintf('The resulting graph G has %d total edges rather than the specified %d. \n', size(G.Edges,1), e);
