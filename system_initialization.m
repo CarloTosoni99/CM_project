@@ -4,16 +4,19 @@
 % given direct graph G = (N, A). The graph G = (N, A) is created by the
 % method graph_initialization. Finally, b and c are two vectors that
 % represent the solution of the system. The function requires also the
-% argument s, which is the seed for the function rng. The user can also
+% argument seed, which is the seed for the function rng. The user can also
 % specify which must be the eigenvalues on the diagonal matrix D, through
 % the parameters eig_val (i.e. the eigenvalues of the diagonal matrix) and
 % dim (how many times an eigenvalue is a root of the characteristic
 % polynomial), remeber that the eigenvalues must be strictly greater than 0
 % because the matrix is positive-definite for definition. The other
-% eigenvalues not directly specified by the user are ctreated between
-% range(0) and range(1).
+% eigenvalues not directly specified by the user are created between
+% range(0) and range(1). The last argument is sing, this is a boolean
+% variable, if it is equal to true then the system Ex = c will admit
+% solution (sum of c'scomponents equal to zero for each weakly connected
+% components of G), otherwise the system will not admit any solution.
 
-function [D, E, b, c] = system_initialization(G, eig_val, dim, range, s)
+function [D, E, b, c] = system_initialization(G, eig_val, dim, range, sing, seed)
 
 % firstly, we generate the incidence matrix E, given the direct graph G
 E = incidence(G);
@@ -22,7 +25,7 @@ E = incidence(G);
 % the rng determines how the rand, randi, randn and randperm functions
 % produce a sequence of random numbers. Below the default generator was
 % inserted, while the seed depends on the argument passed by the user
-rng(s, 'twister');
+rng(seed, 'twister');
 
 n = size(E, 1); % number of nodes
 m = size(E, 2); % number of edges
@@ -66,18 +69,48 @@ end
 D = diag(d);
 
 % The last step of the algorithm consists in the creation of the vectors b
-% and c (the vector b is created randomly while c for simplicity is the
-% null vector).
+% and c. Firstly, the vector b is created randomly
 
 max_b = 10;
 min_b = -10;
 
-max_c = 0;
-min_c = 0;
-
 b = (max_b-min_b)*rand(m, 1) + min_b;
-c = (max_c-min_c)*rand(n, 1) + min_c;
 
+% If sing == true, the vector c is created such that the sum of its 
+% components is equal to zero for each connected components of G. In this 
+% way the system Ex = c admits solutions for the Rouché-Capelli theorem.
 
+max_c = 5;
+min_c = -5;
+c = zeros(n, 1);
 
+if (sing)
+    weak_bins = conncomp(G, 'Type', 'weak');
+    num_conncomp = 0;
+    for i = 1:n
+        if weak_bins(i) > num_conncomp
+            num_conncomp = weak_bins(i);
+        end
+    end
+    
+    num_nodes = zeros(1,num_conncomp);
+    for i = 1:n
+        num_nodes(weak_bins(i)) = num_nodes(weak_bins(i)) + 1;
+    end
+    
+    sum = zeros(1, num_conncomp);
+    for i = 1:n
+        if num_nodes(weak_bins(i)) > 1
+            c(i) = (max_c-min_c)*rand() + min_c;
+            sum(weak_bins(i)) = sum(weak_bins(i)) + c(i);
+            num_nodes(weak_bins(i)) = num_nodes(weak_bins(i)) - 1;
+        else
+            c(i) = -sum(weak_bins(i));
+        end
+    end
 
+else
+% if sing == false, the vector c is randomly created.
+    c = (max_c-min_c)*rand(n, 1) + min_c;
+
+end

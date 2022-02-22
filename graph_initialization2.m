@@ -74,7 +74,7 @@ node_num = 1;
 for i = 1:length(wcon_edges)
     if i <= length(wcon_dim) && wcon_dim(i) > 0
         s(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
-        t(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i));
+        t(edge_num:edge_num + wcon_edges(i) - 1) = randi([node_num node_num+wcon_dim(i)-1], 1, wcon_edges(i)); 
         node_num = node_num + wcon_dim(i);
         edge_num = edge_num + wcon_edges(i);
     elseif last_com > 0
