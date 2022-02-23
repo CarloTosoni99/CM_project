@@ -11,12 +11,16 @@
 % polynomial), remeber that the eigenvalues must be strictly greater than 0
 % because the matrix is positive-definite for definition. The other
 % eigenvalues not directly specified by the user are created between
-% range(0) and range(1). The last argument is sing, this is a boolean
-% variable, if it is equal to true then the system Ex = c will admit
-% solution (sum of c'scomponents equal to zero for each weakly connected
-% components of G), otherwise the system will not admit any solution.
+% range(0) and range(1). The argument lin_dep (linear dependency) is a 
+% boolean variable, if it is equal to true the vector c will be created 
+% such that then the system Ex = c will admit solution (sum of c's 
+% components equal to zero for each weakly connected components of G), 
+% otherwise the system will not admit any solution. Finally del_row is
+% another boolean variable, if it is equal to true the function will remove
+% a row of E and c for each weakly connected component of G restoring the
+% linear independence
 
-function [D, E, b, c] = system_initialization(G, eig_val, dim, range, sing, seed)
+function [D, E, b, c] = system_initialization(G, eig_val, dim, range, lin_dip, del_row, seed)
 
 % firstly, we generate the incidence matrix E, given the direct graph G
 E = incidence(G);
@@ -37,8 +41,8 @@ d = nan(1,m);
 j = 1;
 for i = 1:length(eig_val)
     % the matrix D is positive definite, hence its eigenvalues must be > 0
-    if (eig_val(i) > 0 & j+dim(i)-1 <= m)
-        d(j:j+dim(i)) = eig_val(i);
+    if (eig_val(i) > 0 && j+dim(i)-1 <= m)
+        d(j:j+dim(i)-1) = eig_val(i);
         j = j + dim(i);
     end
 end
@@ -76,7 +80,7 @@ min_b = -10;
 
 b = (max_b-min_b)*rand(m, 1) + min_b;
 
-% If sing == true, the vector c is created such that the sum of its 
+% If lin_dip == true, the vector c is created such that the sum of its 
 % components is equal to zero for each connected components of G. In this 
 % way the system Ex = c admits solutions for the Rouché-Capelli theorem.
 
@@ -84,7 +88,7 @@ max_c = 5;
 min_c = -5;
 c = zeros(n, 1);
 
-if (sing)
+if (lin_dip)
     weak_bins = conncomp(G, 'Type', 'weak');
     num_conncomp = 0;
     for i = 1:n
@@ -110,7 +114,35 @@ if (sing)
     end
 
 else
-% if sing == false, the vector c is randomly created.
+% if lin_dip == false, the vector c is randomly created.
     c = (max_c-min_c)*rand(n, 1) + min_c;
 
+end
+
+
+% if del_row = true, k rows will be eliminated from E and c in order to
+% restore the linear independence of their rows (k is the number of weakly
+% connected components of E).
+if (del_row)
+    weak_bins = conncomp(G, 'Type', 'weak');
+    num_conncomp = 0;
+    for i = 1:n
+        if weak_bins(i) > num_conncomp
+            num_conncomp = weak_bins(i);
+        end
+    end
+
+    deleted = false(1, num_conncomp);
+    i = 1;
+    j = 1;
+    while(i <= size(E, 1))
+        if(~deleted(weak_bins(j)))
+            deleted(weak_bins(j)) = ~deleted(weak_bins(j));
+            E(i,:) = [];
+            c(i) = [];
+        else
+            i = i + 1;
+        end
+        j = j + 1;
+    end
 end

@@ -6,11 +6,12 @@ w = A*Q(:, n);
 
 H2 = zeros(n+1, 1);
 
-if n-1 > 0
+if issymmetric(A) && n-1 > 0
     m = n-1;
 else
     m = 1;
 end
+
 
 for i = m:n
     H2(i, 1) = Q(:,i)'*w;
