@@ -4,7 +4,7 @@ function [A, s] = system_assembly(D, E, b, c);
 % given the matrices D, E, b and c.
 
 
-n = size(D, 1);
+n = size(E, 1);
 Z = zeros(n);
 A = [D E'; E Z];
 s = [b; c];
