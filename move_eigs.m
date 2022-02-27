@@ -13,5 +13,5 @@ function P = move_eigs(A)
 
 n = size(A,1);
 
-% We have computed PA such that PA = A + 10*eye(n)G 
+% We have computed PA such that PA = A + 10*eye(n) 
 P = eye(n) + ((10*eye(n))/A); 

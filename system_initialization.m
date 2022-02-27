@@ -70,7 +70,10 @@ if (j <= m)
 end
 
 % now it is possible to generate the diagonal matrix
-D = diag(d);
+%D = diag(d);
+D = sparse(1:m,1:m,d,m,m);
+
+
 
 % The last step of the algorithm consists in the creation of the vectors b
 % and c. Firstly, the vector b is created randomly
