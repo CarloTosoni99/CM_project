@@ -1,4 +1,4 @@
-function [A, s] = system_assembly(D, E, b, c);
+function [A, s] = system_assembly(D, E, b, c)
 
 % This simple function is used to compute the system in the form Ax = s
 % given the matrices D, E, b and c.
