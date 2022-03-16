@@ -1,4 +1,4 @@
-function [x, r, d] = conjugate_gradient(E, D, b, c, f, n)
+function [x, r, d] = conjugate_gradient(s, f, n)
 
 % this method is used to apply the conjugate gradient method to our system,
 % the algorithm at each step computes three vectors. These are x, which is
@@ -9,13 +9,11 @@ function [x, r, d] = conjugate_gradient(E, D, b, c, f, n)
 % defined by A), d represents the direction where the algortihm moves at 
 % each step.
 
-m = size(E, 1);
+m = size(s, 1);
 % Initializing the matrices returned by the system
 x = nan(m, n+1);
 r = nan(m, n+1);
 d = nan(m, n+1);
-
-s = E*(D\b) - c;
 
 x(:, 1) = zeros(m, 1); % that is the initial position of the algorithm, 
 % we start from 0
@@ -27,7 +25,7 @@ for i = 1:n
     % The product among matrices ED^{-1}E'd(:,i) is computed by the
     % callback function f, the result w is computed once and used for both
     % a and r
-    w = f(E, D, d(:, i));
+    w = f(d(:, i));
     a = (r(:, i)'*r(:, i))/(d(:, i)'*w);
     x(:, i+1) = x(:, i) + a*d(:, i);
     r(:, i+1) = r(:, i) - a*w;

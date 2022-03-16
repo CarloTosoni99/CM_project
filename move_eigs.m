@@ -9,9 +9,10 @@
 % PAx = Pb, please read the relation related to the project for more 
 % details.
 
-function P = move_eigs(A)
+function P = move_eigs(A, pos)
 
 n = size(A,1);
+disp(n)
 
-% We have computed PA such that PA = A + 10*eye(n)G 
-P = eye(n) + ((10*eye(n))/A); 
+% We have computed PA such that PA = A + pos*eye(n) 
+P = speye(n) + ((pos*speye(n))/A); 

@@ -1,5 +1,5 @@
 
-function [Q2, H, r] = myminres(A, b, n)
+function [x, Q2, H, r] = myminres(A, b, n)
 
 % first step of the algorithm, we have to compute the first vector of the
 % orthonormal basis Q, this is actually easy to compute, indeed we have

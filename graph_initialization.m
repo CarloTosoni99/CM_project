@@ -91,9 +91,9 @@ for i = 1:e
     if s(i) == t(i)
         p = rand();
         if p > 0.5
-            s(i) = mod(s(i) + 1, n+1);
+            s(i) = mod(s(i), n) + 1;
         else
-            t(i) = mod(t(i) + 1, n+1);
+            t(i) = mod(t(i), n) + 1;
         end
     end
 end
